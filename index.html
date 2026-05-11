@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PTE DI 템플릿 퀴즈</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
   :root {
     --bg: #f5f7fa;
@@ -14,10 +13,10 @@
     --text-muted: #718096;
     --accent: #185FA5;
     --accent-light: #e8f0fb;
-    --correct: #2f855a;
+    --correct: #3B6D11;
     --correct-bg: #f0fff4;
     --correct-border: #9ae6b4;
-    --wrong: #c53030;
+    --wrong: #A32D2D;
     --wrong-bg: #fff5f5;
     --wrong-border: #feb2b2;
     --radius: 10px;
@@ -32,7 +31,7 @@
       --text-muted: #a0aec0;
       --accent: #4a90d9;
       --accent-light: #1a2a40;
-      --correct: #48bb78;
+      --correct: #68d391;
       --correct-bg: #1a2e22;
       --correct-border: #2f855a;
       --wrong: #fc8181;
@@ -51,10 +50,7 @@
     justify-content: center;
     padding: 16px;
   }
-  #app {
-    width: 100%;
-    max-width: 680px;
-  }
+  #app { width: 100%; max-width: 640px; }
   .screen { display: none; }
   .screen.active { display: block; }
 
@@ -82,11 +78,7 @@
     box-shadow: var(--shadow);
     margin-bottom: 16px;
   }
-  h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
+  h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
   h2 { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; }
   h3 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
   .subtitle { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 20px; }
@@ -105,14 +97,9 @@
     background: var(--surface);
     color: var(--text);
     transition: all 0.15s;
-    text-decoration: none;
   }
   .btn:hover { opacity: 0.85; }
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
+  .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
   .btn-outline { background: transparent; }
   .btn-sm { padding: 7px 13px; font-size: 0.82rem; }
   .btn-block { width: 100%; justify-content: center; }
@@ -173,58 +160,76 @@
   }
   .question-counter { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
   .template-text {
-    font-size: 1.05rem;
-    line-height: 1.9;
+    font-size: 1rem;
+    line-height: 2.4;
     margin-bottom: 18px;
   }
+
+  /* Typing: inline input */
   .blank-input {
     display: inline-block;
-    min-width: 140px;
+    min-width: 130px;
     border: none;
     border-bottom: 2px solid var(--accent);
-    padding: 2px 6px;
-    font-size: 1rem;
+    padding: 1px 6px;
+    font-size: 0.95rem;
     background: transparent;
     color: var(--text);
     outline: none;
     font-family: inherit;
     vertical-align: baseline;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background 0.2s;
   }
-  .blank-input:focus { border-bottom-color: var(--accent); }
-  .blank-input.correct { border-bottom-color: var(--correct); color: var(--correct); }
-  .blank-input.wrong { border-bottom-color: var(--wrong); color: var(--wrong); }
+  .blank-input:focus { background: var(--accent-light); }
+  .blank-input.correct { border-bottom-color: var(--correct); color: var(--correct); background: var(--correct-bg); }
+  .blank-input.wrong   { border-bottom-color: var(--wrong);   color: var(--wrong);   background: var(--wrong-bg); }
 
-  /* MC options */
-  .options-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-  .option-btn {
-    width: 100%;
-    text-align: left;
-    padding: 12px 16px;
-    border-radius: var(--radius);
-    border: 1.5px solid var(--border);
-    background: var(--surface);
+  /* Dropdown: inline select */
+  .blank-select {
+    display: inline-block;
+    min-width: 150px;
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    padding: 1px 20px 1px 4px;
+    font-size: 0.95rem;
+    background: transparent;
     color: var(--text);
-    font-size: 0.92rem;
+    outline: none;
+    font-family: inherit;
+    vertical-align: baseline;
     cursor: pointer;
-    transition: all 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23718096'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
   }
-  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
-  .option-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); font-weight: 600; }
-  .option-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
-  .option-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .option-btn.correct:disabled, .option-btn.wrong:disabled { opacity: 1; }
+  .blank-select:focus { background-color: var(--accent-light); }
+  .blank-select.correct { border-bottom-color: var(--correct); color: var(--correct); }
+  .blank-select.wrong   { border-bottom-color: var(--wrong);   color: var(--wrong); }
+  .blank-select option  { background: var(--surface); color: var(--text); }
 
   /* Feedback */
   .feedback {
     padding: 10px 14px;
     border-radius: var(--radius);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     margin-bottom: 14px;
+    line-height: 1.7;
     display: none;
   }
-  .feedback.correct { background: var(--correct-bg); border: 1px solid var(--correct-border); color: var(--correct); display: block; }
-  .feedback.wrong { background: var(--wrong-bg); border: 1px solid var(--wrong-border); color: var(--wrong); display: block; }
+  .feedback.show { display: block; }
+  .feedback.all-correct {
+    background: var(--correct-bg);
+    border: 1px solid var(--correct-border);
+    color: var(--correct);
+  }
+  .feedback.has-wrong {
+    background: var(--wrong-bg);
+    border: 1px solid var(--wrong-border);
+    color: var(--wrong);
+  }
+  .answer-hint { color: var(--correct); font-weight: 700; }
 
   /* Stats bar */
   .stat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -233,30 +238,15 @@
   .stat-bar { height: 100%; background: var(--accent); border-radius: 5px; transition: width 0.4s ease; }
   .stat-pct { font-size: 0.8rem; font-weight: 600; min-width: 36px; text-align: right; }
 
-  /* Result summary */
-  .result-score {
-    text-align: center;
-    padding: 20px 0;
-  }
+  /* Result */
+  .result-score { text-align: center; padding: 20px 0; }
   .score-big { font-size: 3rem; font-weight: 800; color: var(--accent); }
   .score-label { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
 
-  /* Divider */
   .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-
-  /* Header */
-  .page-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-  }
+  .page-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
   .page-header h2 { margin: 0; }
 
-  /* Highlight */
-  .highlight { color: var(--accent); font-weight: 600; }
-
-  /* Wrong pool badge */
   .wrong-badge {
     display: inline-flex;
     align-items: center;
@@ -275,13 +265,15 @@
     .card { padding: 16px; }
     h1 { font-size: 1.3rem; }
     .score-big { font-size: 2.4rem; }
+    .mode-group { flex-direction: column; }
+    .blank-input, .blank-select { min-width: 100px; }
   }
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- HOME SCREEN -->
+  <!-- HOME -->
   <div id="screen-home" class="screen active">
     <div class="card">
       <h1>PTE DI 퀴즈</h1>
@@ -300,70 +292,50 @@
       <h3>퀴즈 모드</h3>
       <div class="mode-group">
         <div class="mode-btn active" data-mode="typing" onclick="selectMode(this)">
-          <span class="mode-icon"><i class="ti ti-pencil"></i></span>
+          <span class="mode-icon">✏️</span>
           타이핑 모드
         </div>
-        <div class="mode-btn" data-mode="mc" onclick="selectMode(this)">
-          <span class="mode-icon"><i class="ti ti-list-check"></i></span>
-          4지선다 모드
+        <div class="mode-btn" data-mode="dropdown" onclick="selectMode(this)">
+          <span class="mode-icon">☰</span>
+          드롭다운 모드
         </div>
       </div>
 
       <div class="btn-group">
-        <button class="btn btn-primary btn-block" onclick="startQuiz()">
-          <i class="ti ti-arrow-right"></i> 시작하기
-        </button>
+        <button class="btn btn-primary btn-block" onclick="startQuiz()">▶ 시작하기</button>
       </div>
     </div>
 
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
         <h3 style="margin:0">틀린 문제 풀</h3>
-        <span id="wrong-pool-count" class="wrong-badge"><i class="ti ti-alert-triangle"></i> 0개</span>
+        <span id="wrong-pool-count" class="wrong-badge">⚠ 0개</span>
       </div>
       <div class="btn-group">
         <button class="btn btn-sm" onclick="startWrongPool()" id="btn-wrong-pool" disabled>
-          <i class="ti ti-refresh"></i> 틀린 문제 다시 풀기
+          ↺ 틀린 문제 다시 풀기
         </button>
-        <button class="btn btn-sm" onclick="showStats()">
-          <i class="ti ti-chart-bar"></i> 통계 보기
-        </button>
+        <button class="btn btn-sm" onclick="showStats()">📊 통계 보기</button>
       </div>
     </div>
   </div>
 
-  <!-- QUIZ SCREEN -->
+  <!-- QUIZ -->
   <div id="screen-quiz" class="screen">
-    <div id="progress-bar-wrap">
-      <div id="progress-bar" style="width:0%"></div>
-    </div>
-
+    <div id="progress-bar-wrap"><div id="progress-bar" style="width:0%"></div></div>
     <div class="card">
       <div class="question-counter" id="q-counter">문제 1 / 10</div>
       <span class="type-badge" id="q-type-badge">유형</span>
       <div class="template-text" id="q-template"></div>
-
-      <!-- Typing mode -->
-      <div id="typing-area">
-        <button class="btn btn-primary btn-sm" onclick="submitTyping()" id="btn-submit-typing">
-          <i class="ti ti-check"></i> 확인
-        </button>
-      </div>
-
-      <!-- MC mode -->
-      <div id="mc-area" style="display:none">
-        <div class="options-grid" id="mc-options"></div>
-      </div>
-
       <div class="feedback" id="q-feedback"></div>
-
-      <button class="btn btn-primary btn-sm" id="btn-next" onclick="nextQuestion()" style="display:none">
-        다음 <i class="ti ti-arrow-right"></i>
-      </button>
+      <div class="btn-group">
+        <button class="btn btn-primary btn-sm" onclick="submitAnswer()" id="btn-submit">✓ 확인</button>
+        <button class="btn btn-primary btn-sm" id="btn-next" onclick="nextQuestion()" style="display:none">다음 →</button>
+      </div>
     </div>
   </div>
 
-  <!-- RESULT SCREEN -->
+  <!-- RESULT -->
   <div id="screen-result" class="screen">
     <div class="card">
       <h2>세션 결과</h2>
@@ -376,20 +348,16 @@
       <div id="r-type-stats"></div>
       <hr class="divider">
       <div class="btn-group">
-        <button class="btn btn-primary" onclick="startQuiz()">
-          <i class="ti ti-refresh"></i> 다시 풀기
-        </button>
-        <button class="btn" onclick="goHome()">
-          <i class="ti ti-home"></i> 홈으로
-        </button>
+        <button class="btn btn-primary" onclick="goHome()">🏠 홈으로</button>
+        <button class="btn" onclick="startQuiz()">↺ 다시 풀기</button>
       </div>
     </div>
   </div>
 
-  <!-- STATS SCREEN -->
+  <!-- STATS -->
   <div id="screen-stats" class="screen">
     <div class="page-header">
-      <button class="btn btn-sm" onclick="goHome()"><i class="ti ti-home"></i></button>
+      <button class="btn btn-sm" onclick="goHome()">← 홈</button>
       <h2>누적 통계</h2>
     </div>
     <div class="card">
@@ -399,209 +367,143 @@
       <h3>유형별 정답률</h3>
       <div id="s-type-stats"></div>
       <hr class="divider">
-      <button class="btn btn-sm btn-outline" onclick="resetStats()">
-        <i class="ti ti-refresh"></i> 통계 초기화
-      </button>
+      <button class="btn btn-sm btn-outline" onclick="resetStats()">↺ 통계 초기화</button>
     </div>
   </div>
 
 </div>
-
 <script>
+// ── Data ─────────────────────────────────────────────────────────────────────
+
 const QUESTIONS = [
-  // ── 그래프 비교형 ──
+  // ── 그래프 비교형 (1) ──
   {
     type: 'graph-compare', typeLabel: '그래프 비교형',
-    template: 'This ___ interesting picture about global energy consumption.',
-    blanks: [{ pos: 1, answer: 'is an', distractors: ['is the', 'shows an', 'has an'] }]
+    template: 'This {1} picture about the number of U.S. households keeping pets. And the X axis {2} pet types and the Y axis shows number of households in millions. According to the graph, the highest figure is for Dogs at {3} 63.4 million. And this is {4} followed by the second highest figure, Cats at about 42.7 million. And the lowest figure shown is for Reptiles with the smallest value approximately at 4.5 million, and the rest is Freshwater Fish and Birds. To conclude, it is clear that this graph {5} the distribution of pet ownership in U.S. households.',
+    blanks: [
+      { id: 1, answer: 'is an interesting', distractors: ['is a boring', 'was an old', 'are some nice'] },
+      { id: 2, answer: 'represents',        distractors: ['shows', 'describes', 'is for'] },
+      { id: 3, answer: 'around',            distractors: ['about exactly', 'nearly to', 'closely'] },
+      { id: 4, answer: 'closely',           distractors: ['slowly', 'nearly', 'partially'] },
+      { id: 5, answer: 'illustrates',       distractors: ['demonstrates', 'shows about', 'describes to'] },
+    ]
   },
+  // ── 그래프 비교형 (2) ──
   {
     type: 'graph-compare', typeLabel: '그래프 비교형',
-    template: 'According to the graph, the highest figure is for Asia at ___ 45%.',
-    blanks: [{ pos: 1, answer: 'around', distractors: ['about', 'almost', 'exactly'] }]
+    template: 'This {1} picture about annual rainfall across five major cities. And the X axis {2} city names and the Y axis shows rainfall in millimeters. According to the graph, the highest figure is for Bangkok at {3} 1,400 mm. And this is {4} followed by the second highest figure, Mumbai at about 1,200 mm. And the lowest figure shown is for Sydney with the smallest value approximately at 300 mm, and the rest is Tokyo and London. To conclude, it is clear that this graph {5} the comparison of annual rainfall patterns.',
+    blanks: [
+      { id: 1, answer: 'is an interesting', distractors: ['is a boring', 'was an old', 'are some nice'] },
+      { id: 2, answer: 'represents',        distractors: ['shows', 'describes', 'is for'] },
+      { id: 3, answer: 'around',            distractors: ['about exactly', 'nearly to', 'closely'] },
+      { id: 4, answer: 'closely',           distractors: ['slowly', 'nearly', 'partially'] },
+      { id: 5, answer: 'illustrates',       distractors: ['demonstrates', 'shows about', 'describes to'] },
+    ]
   },
-  {
-    type: 'graph-compare', typeLabel: '그래프 비교형',
-    template: 'And this is ___ followed by the second highest figure for Europe.',
-    blanks: [{ pos: 1, answer: 'closely', distractors: ['nearly', 'slightly', 'well'] }]
-  },
-  {
-    type: 'graph-compare', typeLabel: '그래프 비교형',
-    template: 'And the lowest figure ___ for Africa with the smallest value approximately at 5%.',
-    blanks: [{ pos: 1, answer: 'shown is', distractors: ['is shown', 'can see', 'shown are'] }]
-  },
-  {
-    type: 'graph-compare', typeLabel: '그래프 비교형',
-    template: 'To conclude, it is clear that this graph ___ the distribution of energy consumption.',
-    blanks: [{ pos: 1, answer: 'illustrates', distractors: ['shows about', 'is about', 'explain'] }]
-  },
-  {
-    type: 'graph-compare', typeLabel: '그래프 비교형',
-    template: 'The X axis ___ regions and the Y axis shows percentage values.',
-    blanks: [{ pos: 1, answer: 'represents', distractors: ['show', 'illustrate', 'meaning'] }]
-  },
-  {
-    type: 'graph-compare', typeLabel: '그래프 비교형',
-    template: 'Overall, Asia ___ the highest proportion among all the regions compared.',
-    blanks: [{ pos: 1, answer: 'accounts for', distractors: ['is shown', 'has the', 'accounting'] }]
-  },
-  {
-    type: 'graph-compare', typeLabel: '그래프 비교형',
-    template: 'The bar chart ___ a comparison of annual rainfall across five cities.',
-    blanks: [{ pos: 1, answer: 'provides', distractors: ['showing', 'is about', 'contains of'] }]
-  },
-  // ── 그래프 증감형 ──
+  // ── 그래프 증감형 (1) ──
   {
     type: 'graph-trend', typeLabel: '그래프 증감형',
-    template: 'The largest figure is for online sales, ___ increasing from 20% to 65%.',
-    blanks: [{ pos: 1, answer: 'steadily', distractors: ['slowly', 'suddenly', 'closely'] }]
+    template: 'This graph is about the rise of smartphone usage in the U.S. And the X axis {1} years from 2005 to 2020, and the Y axis shows percentage of U.S. adults. According to the graph, the largest figure is for Any Cellphone, {2} increasing from 65% to 100%. And this is closely followed by the {3} figure, Smartphone, dramatically increasing from 0% to 85%. And the {4} shown is for feature phone users, at around 5% in 2020. To conclude, it\'s clear that this graph {5} the changes in mobile device adoption.',
+    blanks: [
+      { id: 1, answer: 'represents',     distractors: ['shows', 'is for', 'describes'] },
+      { id: 2, answer: 'steadily',       distractors: ['quickly and slowly', 'up and down', 'more and more'] },
+      { id: 3, answer: 'second largest', distractors: ['next small', 'most big', 'lower high'] },
+      { id: 4, answer: 'smallest value', distractors: ['lowest point', 'minimum data', 'least figure'] },
+      { id: 5, answer: 'demonstrates',   distractors: ['illustrates', 'shows about', 'describes'] },
+    ]
   },
+  // ── 그래프 증감형 (2) ──
   {
     type: 'graph-trend', typeLabel: '그래프 증감형',
-    template: 'And this is closely followed by the ___ figure for offline retail.',
-    blanks: [{ pos: 1, answer: 'second largest', distractors: ['next highest', 'second highest', 'second lowest'] }]
+    template: 'This graph is about global internet usage growth. And the X axis {1} years from 2000 to 2020, and the Y axis shows percentage of world population. According to the graph, the largest figure is for Asia, {2} increasing from 5% to 55%. And this is closely followed by the {3} figure, Europe, dramatically increasing from 20% to 90%. And the {4} shown is for Africa, at around 40% in 2020. To conclude, it\'s clear that this graph {5} the changes in global internet penetration.',
+    blanks: [
+      { id: 1, answer: 'represents',     distractors: ['shows', 'is for', 'describes'] },
+      { id: 2, answer: 'steadily',       distractors: ['quickly and slowly', 'up and down', 'more and more'] },
+      { id: 3, answer: 'second largest', distractors: ['next small', 'most big', 'lower high'] },
+      { id: 4, answer: 'smallest value', distractors: ['lowest point', 'minimum data', 'least figure'] },
+      { id: 5, answer: 'demonstrates',   distractors: ['illustrates', 'shows about', 'describes'] },
+    ]
   },
-  {
-    type: 'graph-trend', typeLabel: '그래프 증감형',
-    template: 'And the ___ shown is for traditional media, at 3% in the final year.',
-    blanks: [{ pos: 1, answer: 'smallest value', distractors: ['lowest point', 'minimum figure', 'tiny value'] }]
-  },
-  {
-    type: 'graph-trend', typeLabel: '그래프 증감형',
-    template: 'It is clear that this graph ___ the changes in global internet usage.',
-    blanks: [{ pos: 1, answer: 'demonstrates', distractors: ['is about', 'shows about', 'explain'] }]
-  },
-  {
-    type: 'graph-trend', typeLabel: '그래프 증감형',
-    template: 'The line graph shows that revenue ___ dramatically between 2010 and 2020.',
-    blanks: [{ pos: 1, answer: 'increased', distractors: ['is increase', 'increasing', 'increases to'] }]
-  },
-  {
-    type: 'graph-trend', typeLabel: '그래프 증감형',
-    template: 'In contrast, the figures for print media ___ a steady decline over the period.',
-    blanks: [{ pos: 1, answer: 'show', distractors: ['showing', 'showed about', 'are shown'] }]
-  },
-  {
-    type: 'graph-trend', typeLabel: '그래프 증감형',
-    template: 'The trend ___ that digital adoption will continue to rise in the coming years.',
-    blanks: [{ pos: 1, answer: 'suggests', distractors: ['is suggesting', 'shown', 'can see'] }]
-  },
-  // ── Pie / Table ──
+  // ── Pie / Table (1) ──
   {
     type: 'pie', typeLabel: 'Pie / Table',
-    template: 'The pie chart shows several sections, ___ different percentages of household expenditure.',
-    blanks: [{ pos: 1, answer: 'representing', distractors: ['represented', 'to represent', 'represent of'] }]
+    template: 'This chart is about market share by industry in 2023. And it shows several sections, {1} different percentages of the total market. According to the chart, the largest {2} is for Healthcare, {3} around 35%. And this is closely followed by the second largest section, Technology at about 25%. And the smallest section is for Energy, approximately at 10%, and the rest is Finance and Others. To conclude, this chart {4} the distribution of global market share by industry.',
+    blanks: [
+      { id: 1, answer: 'representing', distractors: ['showing about', 'giving out', 'describing each'] },
+      { id: 2, answer: 'section',      distractors: ['figure', 'area', 'part'] },
+      { id: 3, answer: 'making up',    distractors: ['taking over', 'going up', 'reaching to'] },
+      { id: 4, answer: 'illustrates',  distractors: ['demonstrates', 'shows about', 'describes to'] },
+    ]
   },
+  // ── Pie / Table (2) ──
   {
     type: 'pie', typeLabel: 'Pie / Table',
-    template: 'The largest ___ is for housing, making up around 35% of total spending.',
-    blanks: [{ pos: 1, answer: 'section', distractors: ['percentage', 'number', 'category of'] }]
+    template: 'This diagram is about household expenditure patterns. And it shows several sections, {1} different portions of the monthly budget. According to the diagram, the largest {2} is for Housing, {3} around 35%. And this is closely followed by the second largest section, Food and Drink at about 25%. And the smallest section is for Entertainment, approximately at 5%, and the rest is Transport and Healthcare. To conclude, this diagram {4} the distribution of household spending.',
+    blanks: [
+      { id: 1, answer: 'representing', distractors: ['showing about', 'giving out', 'describing each'] },
+      { id: 2, answer: 'section',      distractors: ['figure', 'area', 'part'] },
+      { id: 3, answer: 'making up',    distractors: ['taking over', 'going up', 'reaching to'] },
+      { id: 4, answer: 'illustrates',  distractors: ['demonstrates', 'shows about', 'describes to'] },
+    ]
   },
-  {
-    type: 'pie', typeLabel: 'Pie / Table',
-    template: 'The smallest section is for entertainment, ___ at just 5% of the total.',
-    blanks: [{ pos: 1, answer: 'approximately', distractors: ['roughly totaling', 'which at', 'amount'] }]
-  },
-  {
-    type: 'pie', typeLabel: 'Pie / Table',
-    template: 'To conclude, this diagram ___ the distribution of household budget in 2023.',
-    blanks: [{ pos: 1, answer: 'illustrates', distractors: ['is about', 'showing', 'can see'] }]
-  },
-  {
-    type: 'pie', typeLabel: 'Pie / Table',
-    template: 'The table ___ the population figures for ten major cities worldwide.',
-    blanks: [{ pos: 1, answer: 'presents', distractors: ['is presenting', 'shown', 'contain of'] }]
-  },
-  {
-    type: 'pie', typeLabel: 'Pie / Table',
-    template: 'Food and drink ___ the second largest category at approximately 25%.',
-    blanks: [{ pos: 1, answer: 'represents', distractors: ['are representing', 'is show', 'shown as'] }]
-  },
-  {
-    type: 'pie', typeLabel: 'Pie / Table',
-    template: '___, the chart clearly shows the proportion of renewable energy sources used globally.',
-    blanks: [{ pos: 1, answer: 'Overall', distractors: ['In summary of', 'To summarize it', 'Concluding'] }]
-  },
-  // ── 순서도 ──
+  // ── 순서도 (1) ──
   {
     type: 'flowchart', typeLabel: '순서도',
-    template: 'This flow chart ___ the steps of the water purification process.',
-    blanks: [{ pos: 1, answer: 'clearly explains', distractors: ['is explaining', 'shown about', 'describe about'] }]
+    template: 'This is an interesting flow chart about the life cycle of a frog, and this flow chart {1} the steps of the frog\'s development. According to the picture, the {2} is laying eggs and the next is embryo formation in progressive order. And this is {3} followed by the next step, the tadpole stage. {4}, the final step is for a fully grown frog returning to lay eggs. To conclude, it is clear that this flow chart {5} the complete life cycle of a frog.',
+    blanks: [
+      { id: 1, answer: 'clearly explains', distractors: ['well describes', 'nicely shows', 'fully covers'] },
+      { id: 2, answer: 'first step',       distractors: ['begin stage', 'initial point', 'starting phase'] },
+      { id: 3, answer: 'naturally',        distractors: ['closely', 'slowly', 'quickly'] },
+      { id: 4, answer: 'Lastly',           distractors: ['Finally then', 'At the end', 'In conclusion'] },
+      { id: 5, answer: 'describes',        distractors: ['illustrates the', 'shows about', 'explains to'] },
+    ]
   },
+  // ── 순서도 (2) ──
   {
     type: 'flowchart', typeLabel: '순서도',
-    template: 'The ___ is collecting raw water and the next is filtering impurities in progressive order.',
-    blanks: [{ pos: 1, answer: 'first step', distractors: ['starting point', 'initial stage of', 'beginning'] }]
+    template: 'This is an interesting flow chart about the water purification process, and this flow chart {1} the steps of water treatment. According to the picture, the {2} is collecting raw water and the next is filtering impurities in progressive order. And this is {3} followed by the next step, the chlorination stage. {4}, the final step is for distribution to households and businesses. To conclude, it is clear that this flow chart {5} the complete water purification process.',
+    blanks: [
+      { id: 1, answer: 'clearly explains', distractors: ['well describes', 'nicely shows', 'fully covers'] },
+      { id: 2, answer: 'first step',       distractors: ['begin stage', 'initial point', 'starting phase'] },
+      { id: 3, answer: 'naturally',        distractors: ['closely', 'slowly', 'quickly'] },
+      { id: 4, answer: 'Lastly',           distractors: ['Finally then', 'At the end', 'In conclusion'] },
+      { id: 5, answer: 'describes',        distractors: ['illustrates the', 'shows about', 'explains to'] },
+    ]
   },
-  {
-    type: 'flowchart', typeLabel: '순서도',
-    template: 'And this is ___ followed by the chlorination and quality testing stages.',
-    blanks: [{ pos: 1, answer: 'naturally', distractors: ['closely', 'quickly', 'slowly then'] }]
-  },
-  {
-    type: 'flowchart', typeLabel: '순서도',
-    template: '___, the final step is distribution to households and businesses.',
-    blanks: [{ pos: 1, answer: 'Lastly', distractors: ['At the end of', 'In finishing', 'At last to'] }]
-  },
-  {
-    type: 'flowchart', typeLabel: '순서도',
-    template: 'This diagram ___ the product development lifecycle from concept to launch.',
-    blanks: [{ pos: 1, answer: 'describes', distractors: ['is describing of', 'shown about', 'explain of'] }]
-  },
-  {
-    type: 'flowchart', typeLabel: '순서도',
-    template: 'Each stage ___ logically into the next, forming a continuous improvement cycle.',
-    blanks: [{ pos: 1, answer: 'flows', distractors: ['is flowing to', 'flow into of', 'going'] }]
-  },
-  // ── 사진 ──
+  // ── 사진 (1) ──
   {
     type: 'photo', typeLabel: '사진',
-    template: 'This picture ___ many interesting features of a modern urban landscape.',
-    blanks: [{ pos: 1, answer: 'shows', distractors: ['showing', 'is show', 'shown about'] }]
+    template: 'This is an interesting picture about sustainable architecture, and this picture {1} many interesting features. According to the picture, the {2} is solar panels on the rooftop, and the next is wind turbines nearby, {3} a clear relationship between renewable energy sources. And this is followed by the next {4}, green rooftop gardens. {5}, another important image is bicycle lanes along the building perimeter. To conclude, it is clear that this picture describes {6} of sustainable urban design.',
+    blanks: [
+      { id: 1, answer: 'shows',                distractors: ['describes some', 'illustrates the', 'gives a'] },
+      { id: 2, answer: 'most notable feature', distractors: ['biggest part', 'main section', 'highest figure'] },
+      { id: 3, answer: 'showing',              distractors: ['giving some info about', 'describing the details of', 'telling us more on'] },
+      { id: 4, answer: 'component',            distractors: ['section', 'figure', 'element then'] },
+      { id: 5, answer: 'Lastly',               distractors: ['Finally then', 'In addition', 'Moreover also'] },
+      { id: 6, answer: 'key elements',         distractors: ['main figures', 'all sections', 'every parts'] },
+    ]
   },
+  // ── 사진 (2) ──
   {
     type: 'photo', typeLabel: '사진',
-    template: 'The ___ is the tall skyscraper in the centre, and the next is the busy road below.',
-    blanks: [{ pos: 1, answer: 'most notable feature', distractors: ['biggest element', 'first image that', 'main thing shown'] }]
-  },
-  {
-    type: 'photo', typeLabel: '사진',
-    template: 'And this is followed by the next ___, a large public park on the right side.',
-    blanks: [{ pos: 1, answer: 'component', distractors: ['elements of', 'features that', 'thing shown'] }]
-  },
-  {
-    type: 'photo', typeLabel: '사진',
-    template: '___, another important image is the river flowing through the city centre.',
-    blanks: [{ pos: 1, answer: 'Lastly', distractors: ['At the end', 'In finishing', 'Finally of'] }]
-  },
-  {
-    type: 'photo', typeLabel: '사진',
-    template: 'This picture describes ___ of sustainable architecture and green design.',
-    blanks: [{ pos: 1, answer: 'key elements', distractors: ['important things', 'the features of', 'main element'] }]
-  },
-  {
-    type: 'photo', typeLabel: '사진',
-    template: 'Solar panels, wind turbines, and green roofs ___ prominently on the left.',
-    blanks: [{ pos: 1, answer: 'can be seen', distractors: ['are seeing', 'shown clearly', 'can see'] }]
-  },
-  {
-    type: 'photo', typeLabel: '사진',
-    template: 'It shows ___ interesting images such as a rooftop garden and bicycle lanes.',
-    blanks: [{ pos: 1, answer: 'other', distractors: ['some of', 'another the', 'more of the'] }]
-  },
-  {
-    type: 'photo', typeLabel: '사진',
-    template: 'This image is about urban farming, ___ very interesting and informative.',
-    blanks: [{ pos: 1, answer: 'which is also', distractors: ['that is also', 'and is very', 'which also is'] }]
+    template: 'This is an interesting picture about a food pyramid, and this picture {1} many interesting features. According to the picture, the {2} is water at the base, and the next is grains and cereals above it, {3} a clear relationship between dietary foundations. And this is followed by the next {4}, vegetables and fruits in the middle sections. {5}, another important image is fats and oils at the very top. To conclude, it is clear that this picture describes {6} of healthy dietary guidelines.',
+    blanks: [
+      { id: 1, answer: 'shows',                distractors: ['describes some', 'illustrates the', 'gives a'] },
+      { id: 2, answer: 'most notable feature', distractors: ['biggest part', 'main section', 'highest figure'] },
+      { id: 3, answer: 'showing',              distractors: ['giving some info about', 'describing the details of', 'telling us more on'] },
+      { id: 4, answer: 'component',            distractors: ['section', 'figure', 'element then'] },
+      { id: 5, answer: 'Lastly',               distractors: ['Finally then', 'In addition', 'Moreover also'] },
+      { id: 6, answer: 'key elements',         distractors: ['main figures', 'all sections', 'every parts'] },
+    ]
   },
 ];
 
 const TYPE_LABELS = {
   'graph-compare': '그래프 비교형',
-  'graph-trend': '그래프 증감형',
-  'pie': 'Pie / Table',
-  'flowchart': '순서도',
-  'photo': '사진',
+  'graph-trend':   '그래프 증감형',
+  'pie':           'Pie / Table',
+  'flowchart':     '순서도',
+  'photo':         '사진',
 };
 const ALL_TYPES = Object.keys(TYPE_LABELS);
 const MAX_Q = 10;
@@ -617,11 +519,12 @@ let state = {
   fromWrongPool: false,
 };
 
+// ── Storage ──────────────────────────────────────────────────────────────────
+
 function loadStorage() {
-  try {
-    state.wrongPool = JSON.parse(localStorage.getItem('diQuiz_wrongPool') || '[]');
-    updateWrongPoolUI();
-  } catch(e) { state.wrongPool = []; }
+  try { state.wrongPool = JSON.parse(localStorage.getItem('diQuiz_wrongPool') || '[]'); }
+  catch(e) { state.wrongPool = []; }
+  updateWrongPoolUI();
 }
 
 function saveStorage() {
@@ -630,9 +533,8 @@ function saveStorage() {
 }
 
 function loadStats() {
-  try {
-    return JSON.parse(localStorage.getItem('diQuiz_stats') || '{}');
-  } catch(e) { return {}; }
+  try { return JSON.parse(localStorage.getItem('diQuiz_stats') || '{}'); }
+  catch(e) { return {}; }
 }
 
 function saveStats(stats) {
@@ -641,11 +543,12 @@ function saveStats(stats) {
 
 function updateWrongPoolUI() {
   const n = state.wrongPool.length;
-  document.getElementById('wrong-pool-count').innerHTML = `<i class="ti ti-alert-triangle"></i> ${n}개`;
+  document.getElementById('wrong-pool-count').textContent = `⚠ ${n}개`;
   document.getElementById('btn-wrong-pool').disabled = n === 0;
 }
 
-// Type chip selection (mutually exclusive with "all")
+// ── UI helpers ────────────────────────────────────────────────────────────────
+
 document.querySelectorAll('.chip').forEach(chip => {
   chip.addEventListener('click', () => {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -669,9 +572,12 @@ function shuffle(arr) {
   return a;
 }
 
-function buildSession(pool) {
-  return shuffle(pool).slice(0, MAX_Q);
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
 }
+
+// ── Quiz flow ─────────────────────────────────────────────────────────────────
 
 function startQuiz() {
   state.fromWrongPool = false;
@@ -679,7 +585,7 @@ function startQuiz() {
     ? QUESTIONS
     : QUESTIONS.filter(q => q.type === state.selectedType);
   if (pool.length === 0) { alert('선택한 유형에 문제가 없습니다.'); return; }
-  state.session = buildSession(pool);
+  state.session = shuffle(pool).slice(0, MAX_Q);
   state.currentIdx = 0;
   state.sessionResults = [];
   showScreen('quiz');
@@ -689,10 +595,9 @@ function startQuiz() {
 function startWrongPool() {
   if (state.wrongPool.length === 0) return;
   state.fromWrongPool = true;
-  // Re-hydrate wrongPool items as question objects
   const pool = state.wrongPool.map(id => QUESTIONS[id]).filter(Boolean);
   if (pool.length === 0) { state.wrongPool = []; saveStorage(); return; }
-  state.session = buildSession(pool);
+  state.session = shuffle(pool).slice(0, MAX_Q);
   state.currentIdx = 0;
   state.sessionResults = [];
   showScreen('quiz');
@@ -707,135 +612,112 @@ function renderQuestion() {
   document.getElementById('q-counter').textContent = `문제 ${idx + 1} / ${total}`;
   document.getElementById('q-type-badge').textContent = q.typeLabel;
   document.getElementById('progress-bar').style.width = `${(idx / total) * 100}%`;
-  document.getElementById('q-feedback').className = 'feedback';
-  document.getElementById('q-feedback').textContent = '';
+
+  const fb = document.getElementById('q-feedback');
+  fb.className = 'feedback';
+  fb.innerHTML = '';
+
+  document.getElementById('btn-submit').style.display = '';
   document.getElementById('btn-next').style.display = 'none';
   state.answered = false;
 
-  // Build template HTML
-  const blank = q.blanks[0];
-  const parts = q.template.split('___');
-  let html = '';
-  parts.forEach((part, i) => {
-    html += part;
-    if (i < parts.length - 1) {
-      if (state.mode === 'typing') {
-        html += `<input class="blank-input" id="blank-0" type="text" autocomplete="off" spellcheck="false" placeholder="입력...">`;
-      } else {
-        html += `<span id="blank-0" class="blank-input" style="min-width:120px;display:inline-block"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>`;
-      }
+  // Replace {n} placeholders with input or select
+  let html = q.template;
+  q.blanks.forEach(blank => {
+    const choices = shuffle([blank.answer, ...blank.distractors]);
+    if (state.mode === 'typing') {
+      html = html.replace(
+        `{${blank.id}}`,
+        `<input class="blank-input" data-id="${blank.id}" type="text" autocomplete="off" spellcheck="false" placeholder="...">`
+      );
+    } else {
+      const opts = `<option value="">선택...</option>` +
+        choices.map(c => `<option value="${c}">${c}</option>`).join('');
+      html = html.replace(
+        `{${blank.id}}`,
+        `<select class="blank-select" data-id="${blank.id}">${opts}</select>`
+      );
     }
   });
+
   document.getElementById('q-template').innerHTML = html;
 
-  // Mode-specific setup
   if (state.mode === 'typing') {
-    document.getElementById('typing-area').style.display = '';
-    document.getElementById('mc-area').style.display = 'none';
-    const input = document.getElementById('blank-0');
-    input.focus();
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') submitTyping(); });
-  } else {
-    document.getElementById('typing-area').style.display = 'none';
-    document.getElementById('mc-area').style.display = '';
-    renderMCOptions(q);
+    const inputs = [...document.querySelectorAll('.blank-input')];
+    if (inputs.length > 0) inputs[0].focus();
+    inputs.forEach((input, i) => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          if (i < inputs.length - 1) inputs[i + 1].focus();
+          else document.getElementById('btn-submit').focus();
+        }
+        if (e.key === 'Enter') submitAnswer();
+      });
+    });
   }
 }
 
-function renderMCOptions(q) {
-  const blank = q.blanks[0];
-  const answers = blank.answer.split('/');
-  const choices = shuffle([blank.answer, ...blank.distractors]).slice(0, 4);
-  // Ensure answer is in choices
-  if (!choices.some(c => answers.includes(c))) {
-    choices[Math.floor(Math.random() * choices.length)] = blank.answer;
-  }
-
-  const grid = document.getElementById('mc-options');
-  grid.innerHTML = '';
-  choices.forEach(choice => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = choice;
-    btn.onclick = () => selectMC(btn, choice, blank.answer);
-    grid.appendChild(btn);
-  });
-}
-
-function selectMC(btn, chosen, answer) {
+function submitAnswer() {
   if (state.answered) return;
-  state.answered = true;
-  const answers = answer.split('/');
-  const isCorrect = answers.some(a => a.toLowerCase().trim() === chosen.toLowerCase().trim());
-
-  document.querySelectorAll('.option-btn').forEach(b => {
-    b.disabled = true;
-    const bAnswers = answer.split('/');
-    if (bAnswers.some(a => a.toLowerCase().trim() === b.textContent.toLowerCase().trim())) {
-      b.classList.add('correct');
-    }
-  });
-  if (!isCorrect) btn.classList.add('wrong');
-
-  // Fill blank display
-  const blankEl = document.getElementById('blank-0');
-  blankEl.textContent = chosen;
-  blankEl.className = 'blank-input ' + (isCorrect ? 'correct' : 'wrong');
-
-  showFeedback(isCorrect, answer);
-  recordResult(isCorrect);
-  document.getElementById('btn-next').style.display = '';
-}
-
-function submitTyping() {
-  if (state.answered) return;
-  const input = document.getElementById('blank-0');
-  if (!input) return;
-  const val = input.value.trim();
-  if (!val) return;
-  state.answered = true;
 
   const q = state.session[state.currentIdx];
-  const blank = q.blanks[0];
-  const answers = blank.answer.split('/');
-  const isCorrect = answers.some(a => a.toLowerCase().trim() === val.toLowerCase().trim());
 
-  input.disabled = true;
-  input.className = 'blank-input ' + (isCorrect ? 'correct' : 'wrong');
+  // Require all blanks filled
+  for (const blank of q.blanks) {
+    const el = document.querySelector(`[data-id="${blank.id}"]`);
+    const val = el ? el.value.trim() : '';
+    if (!val) { if (el) el.focus(); return; }
+  }
 
-  showFeedback(isCorrect, blank.answer);
-  recordResult(isCorrect);
-  document.getElementById('btn-submit-typing').style.display = 'none';
-  document.getElementById('btn-next').style.display = '';
-}
+  let allCorrect = true;
+  const wrongItems = [];
 
-function showFeedback(isCorrect, answer) {
+  q.blanks.forEach(blank => {
+    const el = document.querySelector(`[data-id="${blank.id}"]`);
+    const val = el.value.trim();
+    const isCorrect = blank.answer.toLowerCase() === val.toLowerCase();
+
+    el.disabled = true;
+    el.classList.add(isCorrect ? 'correct' : 'wrong');
+
+    if (!isCorrect) {
+      allCorrect = false;
+      wrongItems.push({ id: blank.id, correct: blank.answer });
+    }
+  });
+
+  state.answered = true;
+
   const fb = document.getElementById('q-feedback');
-  if (isCorrect) {
-    fb.className = 'feedback correct';
-    fb.innerHTML = `<i class="ti ti-check"></i> 정답입니다!`;
+  if (allCorrect) {
+    fb.className = 'feedback show all-correct';
+    fb.innerHTML = '✓ 모두 정답입니다!';
   } else {
-    fb.className = 'feedback wrong';
-    fb.innerHTML = `<i class="ti ti-x"></i> 오답. 정답: <strong>${answer}</strong>`;
+    const hints = wrongItems
+      .map(w => `빈칸 ${w.id}: <span class="answer-hint">${w.correct}</span>`)
+      .join('&nbsp;&nbsp;');
+    fb.className = 'feedback show has-wrong';
+    fb.innerHTML = `✗ 오답이 있습니다. 정답 → ${hints}`;
   }
+
+  document.getElementById('btn-submit').style.display = 'none';
+  document.getElementById('btn-next').style.display = '';
+
+  recordResult(allCorrect, q);
 }
 
-function recordResult(isCorrect) {
-  const q = state.session[state.currentIdx];
-  state.sessionResults.push({ type: q.type, typeLabel: q.typeLabel, correct: isCorrect, qIndex: QUESTIONS.indexOf(q) });
-
-  // Wrong pool management
+function recordResult(isCorrect, q) {
   const qIdx = QUESTIONS.indexOf(q);
+  state.sessionResults.push({ type: q.type, typeLabel: q.typeLabel, correct: isCorrect, qIndex: qIdx });
+
   if (!isCorrect) {
-    if (qIdx >= 0 && !state.wrongPool.includes(qIdx)) {
-      state.wrongPool.push(qIdx);
-    }
+    if (qIdx >= 0 && !state.wrongPool.includes(qIdx)) state.wrongPool.push(qIdx);
   } else {
     state.wrongPool = state.wrongPool.filter(i => i !== qIdx);
   }
   saveStorage();
 
-  // Cumulative stats
   const stats = loadStats();
   if (!stats[q.type]) stats[q.type] = { correct: 0, total: 0 };
   stats[q.type].total++;
@@ -845,13 +727,11 @@ function recordResult(isCorrect) {
 
 function nextQuestion() {
   state.currentIdx++;
-  if (state.currentIdx >= state.session.length) {
-    showResult();
-    return;
-  }
-  document.getElementById('btn-submit-typing').style.display = '';
+  if (state.currentIdx >= state.session.length) { showResult(); return; }
   renderQuestion();
 }
+
+// ── Result ────────────────────────────────────────────────────────────────────
 
 function showResult() {
   showScreen('result');
@@ -862,13 +742,13 @@ function showResult() {
   document.getElementById('r-score').textContent = `${correct}/${total}`;
   document.getElementById('r-pct').textContent = `정답률 ${pct}%`;
 
-  // Type breakdown
   const byType = {};
   state.sessionResults.forEach(r => {
     if (!byType[r.type]) byType[r.type] = { label: r.typeLabel, correct: 0, total: 0 };
     byType[r.type].total++;
     if (r.correct) byType[r.type].correct++;
   });
+
   const container = document.getElementById('r-type-stats');
   container.innerHTML = '';
   Object.values(byType).forEach(t => {
@@ -885,6 +765,8 @@ function renderStatRow(label, correct, total, pct) {
       <span class="stat-pct">${correct}/${total}</span>
     </div>`;
 }
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
 
 function showStats() {
   showScreen('stats');
@@ -920,11 +802,6 @@ function resetStats() {
 function goHome() {
   showScreen('home');
   updateWrongPoolUI();
-}
-
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
 }
 
 // Init
