@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PTE DI 템플릿 퀴즈</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --text-muted: #718096;
+    --accent: #185FA5;
+    --accent-light: #e8f0fb;
+    --correct: #2f855a;
+    --correct-bg: #f0fff4;
+    --correct-border: #9ae6b4;
+    --wrong: #c53030;
+    --wrong-bg: #fff5f5;
+    --wrong-border: #feb2b2;
+    --radius: 10px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --border: #2d3148;
+      --text: #e2e8f0;
+      --text-muted: #a0aec0;
+      --accent: #4a90d9;
+      --accent-light: #1a2a40;
+      --correct: #48bb78;
+      --correct-bg: #1a2e22;
+      --correct-border: #2f855a;
+      --wrong: #fc8181;
+      --wrong-bg: #2d1515;
+      --wrong-border: #c53030;
+      --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 16px;
+  }
+  #app {
+    width: 100%;
+    max-width: 680px;
+  }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* Progress bar */
+  #progress-bar-wrap {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  h2 { font-size: 1.2rem; font-weight: 600; margin-bottom: 16px; }
+  h3 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; }
+  .subtitle { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 20px; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--text);
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .btn-outline { background: transparent; }
+  .btn-sm { padding: 7px 13px; font-size: 0.82rem; }
+  .btn-block { width: 100%; justify-content: center; }
+  .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* Type chips */
+  .chip-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .chip {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 0.82rem;
+    cursor: pointer;
+    background: var(--surface);
+    color: var(--text-muted);
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .chip.active {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Mode selector */
+  .mode-group { display: flex; gap: 10px; margin-bottom: 20px; }
+  .mode-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius);
+    border: 2px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .mode-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+  .mode-btn .mode-icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+  /* Quiz */
+  .type-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: var(--accent-light);
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .question-counter { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+  .template-text {
+    font-size: 1.05rem;
+    line-height: 1.9;
+    margin-bottom: 18px;
+  }
+  .blank-input {
+    display: inline-block;
+    min-width: 140px;
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    padding: 2px 6px;
+    font-size: 1rem;
+    background: transparent;
+    color: var(--text);
+    outline: none;
+    font-family: inherit;
+    vertical-align: baseline;
+    transition: border-color 0.2s;
+  }
+  .blank-input:focus { border-bottom-color: var(--accent); }
+  .blank-input.correct { border-bottom-color: var(--correct); color: var(--correct); }
+  .blank-input.wrong { border-bottom-color: var(--wrong); color: var(--wrong); }
+
+  /* MC options */
+  .options-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .option-btn {
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.92rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-light); }
+  .option-btn.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); font-weight: 600; }
+  .option-btn.wrong { border-color: var(--wrong); background: var(--wrong-bg); color: var(--wrong); }
+  .option-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .option-btn.correct:disabled, .option-btn.wrong:disabled { opacity: 1; }
+
+  /* Feedback */
+  .feedback {
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .feedback.correct { background: var(--correct-bg); border: 1px solid var(--correct-border); color: var(--correct); display: block; }
+  .feedback.wrong { background: var(--wrong-bg); border: 1px solid var(--wrong-border); color: var(--wrong); display: block; }
+
+  /* Stats bar */
+  .stat-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .stat-label { font-size: 0.82rem; color: var(--text-muted); min-width: 110px; }
+  .stat-bar-wrap { flex: 1; height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; }
+  .stat-bar { height: 100%; background: var(--accent); border-radius: 5px; transition: width 0.4s ease; }
+  .stat-pct { font-size: 0.8rem; font-weight: 600; min-width: 36px; text-align: right; }
+
+  /* Result summary */
+  .result-score {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .score-big { font-size: 3rem; font-weight: 800; color: var(--accent); }
+  .score-label { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  /* Header */
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .page-header h2 { margin: 0; }
+
+  /* Highlight */
+  .highlight { color: var(--accent); font-weight: 600; }
+
+  /* Wrong pool badge */
+  .wrong-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--wrong-bg);
+    border: 1px solid var(--wrong-border);
+    color: var(--wrong);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 12px;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 10px; }
+    .card { padding: 16px; }
+    h1 { font-size: 1.3rem; }
+    .score-big { font-size: 2.4rem; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HOME SCREEN -->
+  <div id="screen-home" class="screen active">
+    <div class="card">
+      <h1>PTE DI 퀴즈</h1>
+      <p class="subtitle">Describe Image 템플릿 표현을 연습하세요</p>
+
+      <h3>유형 선택</h3>
+      <div class="chip-group" id="type-chips">
+        <span class="chip active" data-type="all">전체 랜덤</span>
+        <span class="chip" data-type="graph-compare">그래프 비교형</span>
+        <span class="chip" data-type="graph-trend">그래프 증감형</span>
+        <span class="chip" data-type="pie">Pie / Table</span>
+        <span class="chip" data-type="flowchart">순서도</span>
+        <span class="chip" data-type="photo">사진</span>
+      </div>
+
+      <h3>퀴즈 모드</h3>
+      <div class="mode-group">
+        <div class="mode-btn active" data-mode="typing" onclick="selectMode(this)">
+          <span class="mode-icon"><i class="ti ti-pencil"></i></span>
+          타이핑 모드
+        </div>
+        <div class="mode-btn" data-mode="mc" onclick="selectMode(this)">
+          <span class="mode-icon"><i class="ti ti-list-check"></i></span>
+          4지선다 모드
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary btn-block" onclick="startQuiz()">
+          <i class="ti ti-arrow-right"></i> 시작하기
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <h3 style="margin:0">틀린 문제 풀</h3>
+        <span id="wrong-pool-count" class="wrong-badge"><i class="ti ti-alert-triangle"></i> 0개</span>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-sm" onclick="startWrongPool()" id="btn-wrong-pool" disabled>
+          <i class="ti ti-refresh"></i> 틀린 문제 다시 풀기
+        </button>
+        <button class="btn btn-sm" onclick="showStats()">
+          <i class="ti ti-chart-bar"></i> 통계 보기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="screen-quiz" class="screen">
+    <div id="progress-bar-wrap">
+      <div id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <div class="card">
+      <div class="question-counter" id="q-counter">문제 1 / 10</div>
+      <span class="type-badge" id="q-type-badge">유형</span>
+      <div class="template-text" id="q-template"></div>
+
+      <!-- Typing mode -->
+      <div id="typing-area">
+        <button class="btn btn-primary btn-sm" onclick="submitTyping()" id="btn-submit-typing">
+          <i class="ti ti-check"></i> 확인
+        </button>
+      </div>
+
+      <!-- MC mode -->
+      <div id="mc-area" style="display:none">
+        <div class="options-grid" id="mc-options"></div>
+      </div>
+
+      <div class="feedback" id="q-feedback"></div>
+
+      <button class="btn btn-primary btn-sm" id="btn-next" onclick="nextQuestion()" style="display:none">
+        다음 <i class="ti ti-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="screen-result" class="screen">
+    <div class="card">
+      <h2>세션 결과</h2>
+      <div class="result-score">
+        <div class="score-big" id="r-score">0/10</div>
+        <div class="score-label" id="r-pct">정답률 0%</div>
+      </div>
+      <hr class="divider">
+      <h3>유형별 결과</h3>
+      <div id="r-type-stats"></div>
+      <hr class="divider">
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="startQuiz()">
+          <i class="ti ti-refresh"></i> 다시 풀기
+        </button>
+        <button class="btn" onclick="goHome()">
+          <i class="ti ti-home"></i> 홈으로
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS SCREEN -->
+  <div id="screen-stats" class="screen">
+    <div class="page-header">
+      <button class="btn btn-sm" onclick="goHome()"><i class="ti ti-home"></i></button>
+      <h2>누적 통계</h2>
+    </div>
+    <div class="card">
+      <h3>전체 정답률</h3>
+      <div id="s-total"></div>
+      <hr class="divider">
+      <h3>유형별 정답률</h3>
+      <div id="s-type-stats"></div>
+      <hr class="divider">
+      <button class="btn btn-sm btn-outline" onclick="resetStats()">
+        <i class="ti ti-refresh"></i> 통계 초기화
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  // ── 그래프 비교형 ──
+  {
+    type: 'graph-compare', typeLabel: '그래프 비교형',
+    template: 'This ___ interesting picture about global energy consumption.',
+    blanks: [{ pos: 1, answer: 'is an', distractors: ['is the', 'shows an', 'has an'] }]
+  },
+  {
+    type: 'graph-compare', typeLabel: '그래프 비교형',
+    template: 'According to the graph, the highest figure is for Asia at ___ 45%.',
+    blanks: [{ pos: 1, answer: 'around', distractors: ['about', 'almost', 'exactly'] }]
+  },
+  {
+    type: 'graph-compare', typeLabel: '그래프 비교형',
+    template: 'And this is ___ followed by the second highest figure for Europe.',
+    blanks: [{ pos: 1, answer: 'closely', distractors: ['nearly', 'slightly', 'well'] }]
+  },
+  {
+    type: 'graph-compare', typeLabel: '그래프 비교형',
+    template: 'And the lowest figure ___ for Africa with the smallest value approximately at 5%.',
+    blanks: [{ pos: 1, answer: 'shown is', distractors: ['is shown', 'can see', 'shown are'] }]
+  },
+  {
+    type: 'graph-compare', typeLabel: '그래프 비교형',
+    template: 'To conclude, it is clear that this graph ___ the distribution of energy consumption.',
+    blanks: [{ pos: 1, answer: 'illustrates', distractors: ['shows about', 'is about', 'explain'] }]
+  },
+  {
+    type: 'graph-compare', typeLabel: '그래프 비교형',
+    template: 'The X axis ___ regions and the Y axis shows percentage values.',
+    blanks: [{ pos: 1, answer: 'represents', distractors: ['show', 'illustrate', 'meaning'] }]
+  },
+  {
+    type: 'graph-compare', typeLabel: '그래프 비교형',
+    template: 'Overall, Asia ___ the highest proportion among all the regions compared.',
+    blanks: [{ pos: 1, answer: 'accounts for', distractors: ['is shown', 'has the', 'accounting'] }]
+  },
+  {
+    type: 'graph-compare', typeLabel: '그래프 비교형',
+    template: 'The bar chart ___ a comparison of annual rainfall across five cities.',
+    blanks: [{ pos: 1, answer: 'provides', distractors: ['showing', 'is about', 'contains of'] }]
+  },
+  // ── 그래프 증감형 ──
+  {
+    type: 'graph-trend', typeLabel: '그래프 증감형',
+    template: 'The largest figure is for online sales, ___ increasing from 20% to 65%.',
+    blanks: [{ pos: 1, answer: 'steadily', distractors: ['slowly', 'suddenly', 'closely'] }]
+  },
+  {
+    type: 'graph-trend', typeLabel: '그래프 증감형',
+    template: 'And this is closely followed by the ___ figure for offline retail.',
+    blanks: [{ pos: 1, answer: 'second largest', distractors: ['next highest', 'second highest', 'second lowest'] }]
+  },
+  {
+    type: 'graph-trend', typeLabel: '그래프 증감형',
+    template: 'And the ___ shown is for traditional media, at 3% in the final year.',
+    blanks: [{ pos: 1, answer: 'smallest value', distractors: ['lowest point', 'minimum figure', 'tiny value'] }]
+  },
+  {
+    type: 'graph-trend', typeLabel: '그래프 증감형',
+    template: 'It is clear that this graph ___ the changes in global internet usage.',
+    blanks: [{ pos: 1, answer: 'demonstrates', distractors: ['is about', 'shows about', 'explain'] }]
+  },
+  {
+    type: 'graph-trend', typeLabel: '그래프 증감형',
+    template: 'The line graph shows that revenue ___ dramatically between 2010 and 2020.',
+    blanks: [{ pos: 1, answer: 'increased', distractors: ['is increase', 'increasing', 'increases to'] }]
+  },
+  {
+    type: 'graph-trend', typeLabel: '그래프 증감형',
+    template: 'In contrast, the figures for print media ___ a steady decline over the period.',
+    blanks: [{ pos: 1, answer: 'show', distractors: ['showing', 'showed about', 'are shown'] }]
+  },
+  {
+    type: 'graph-trend', typeLabel: '그래프 증감형',
+    template: 'The trend ___ that digital adoption will continue to rise in the coming years.',
+    blanks: [{ pos: 1, answer: 'suggests', distractors: ['is suggesting', 'shown', 'can see'] }]
+  },
+  // ── Pie / Table ──
+  {
+    type: 'pie', typeLabel: 'Pie / Table',
+    template: 'The pie chart shows several sections, ___ different percentages of household expenditure.',
+    blanks: [{ pos: 1, answer: 'representing', distractors: ['represented', 'to represent', 'represent of'] }]
+  },
+  {
+    type: 'pie', typeLabel: 'Pie / Table',
+    template: 'The largest ___ is for housing, making up around 35% of total spending.',
+    blanks: [{ pos: 1, answer: 'section', distractors: ['percentage', 'number', 'category of'] }]
+  },
+  {
+    type: 'pie', typeLabel: 'Pie / Table',
+    template: 'The smallest section is for entertainment, ___ at just 5% of the total.',
+    blanks: [{ pos: 1, answer: 'approximately', distractors: ['roughly totaling', 'which at', 'amount'] }]
+  },
+  {
+    type: 'pie', typeLabel: 'Pie / Table',
+    template: 'To conclude, this diagram ___ the distribution of household budget in 2023.',
+    blanks: [{ pos: 1, answer: 'illustrates', distractors: ['is about', 'showing', 'can see'] }]
+  },
+  {
+    type: 'pie', typeLabel: 'Pie / Table',
+    template: 'The table ___ the population figures for ten major cities worldwide.',
+    blanks: [{ pos: 1, answer: 'presents', distractors: ['is presenting', 'shown', 'contain of'] }]
+  },
+  {
+    type: 'pie', typeLabel: 'Pie / Table',
+    template: 'Food and drink ___ the second largest category at approximately 25%.',
+    blanks: [{ pos: 1, answer: 'represents', distractors: ['are representing', 'is show', 'shown as'] }]
+  },
+  {
+    type: 'pie', typeLabel: 'Pie / Table',
+    template: '___, the chart clearly shows the proportion of renewable energy sources used globally.',
+    blanks: [{ pos: 1, answer: 'Overall', distractors: ['In summary of', 'To summarize it', 'Concluding'] }]
+  },
+  // ── 순서도 ──
+  {
+    type: 'flowchart', typeLabel: '순서도',
+    template: 'This flow chart ___ the steps of the water purification process.',
+    blanks: [{ pos: 1, answer: 'clearly explains', distractors: ['is explaining', 'shown about', 'describe about'] }]
+  },
+  {
+    type: 'flowchart', typeLabel: '순서도',
+    template: 'The ___ is collecting raw water and the next is filtering impurities in progressive order.',
+    blanks: [{ pos: 1, answer: 'first step', distractors: ['starting point', 'initial stage of', 'beginning'] }]
+  },
+  {
+    type: 'flowchart', typeLabel: '순서도',
+    template: 'And this is ___ followed by the chlorination and quality testing stages.',
+    blanks: [{ pos: 1, answer: 'naturally', distractors: ['closely', 'quickly', 'slowly then'] }]
+  },
+  {
+    type: 'flowchart', typeLabel: '순서도',
+    template: '___, the final step is distribution to households and businesses.',
+    blanks: [{ pos: 1, answer: 'Lastly', distractors: ['At the end of', 'In finishing', 'At last to'] }]
+  },
+  {
+    type: 'flowchart', typeLabel: '순서도',
+    template: 'This diagram ___ the product development lifecycle from concept to launch.',
+    blanks: [{ pos: 1, answer: 'describes', distractors: ['is describing of', 'shown about', 'explain of'] }]
+  },
+  {
+    type: 'flowchart', typeLabel: '순서도',
+    template: 'Each stage ___ logically into the next, forming a continuous improvement cycle.',
+    blanks: [{ pos: 1, answer: 'flows', distractors: ['is flowing to', 'flow into of', 'going'] }]
+  },
+  // ── 사진 ──
+  {
+    type: 'photo', typeLabel: '사진',
+    template: 'This picture ___ many interesting features of a modern urban landscape.',
+    blanks: [{ pos: 1, answer: 'shows', distractors: ['showing', 'is show', 'shown about'] }]
+  },
+  {
+    type: 'photo', typeLabel: '사진',
+    template: 'The ___ is the tall skyscraper in the centre, and the next is the busy road below.',
+    blanks: [{ pos: 1, answer: 'most notable feature', distractors: ['biggest element', 'first image that', 'main thing shown'] }]
+  },
+  {
+    type: 'photo', typeLabel: '사진',
+    template: 'And this is followed by the next ___, a large public park on the right side.',
+    blanks: [{ pos: 1, answer: 'component', distractors: ['elements of', 'features that', 'thing shown'] }]
+  },
+  {
+    type: 'photo', typeLabel: '사진',
+    template: '___, another important image is the river flowing through the city centre.',
+    blanks: [{ pos: 1, answer: 'Lastly', distractors: ['At the end', 'In finishing', 'Finally of'] }]
+  },
+  {
+    type: 'photo', typeLabel: '사진',
+    template: 'This picture describes ___ of sustainable architecture and green design.',
+    blanks: [{ pos: 1, answer: 'key elements', distractors: ['important things', 'the features of', 'main element'] }]
+  },
+  {
+    type: 'photo', typeLabel: '사진',
+    template: 'Solar panels, wind turbines, and green roofs ___ prominently on the left.',
+    blanks: [{ pos: 1, answer: 'can be seen', distractors: ['are seeing', 'shown clearly', 'can see'] }]
+  },
+  {
+    type: 'photo', typeLabel: '사진',
+    template: 'It shows ___ interesting images such as a rooftop garden and bicycle lanes.',
+    blanks: [{ pos: 1, answer: 'other', distractors: ['some of', 'another the', 'more of the'] }]
+  },
+  {
+    type: 'photo', typeLabel: '사진',
+    template: 'This image is about urban farming, ___ very interesting and informative.',
+    blanks: [{ pos: 1, answer: 'which is also', distractors: ['that is also', 'and is very', 'which also is'] }]
+  },
+];
+
+const TYPE_LABELS = {
+  'graph-compare': '그래프 비교형',
+  'graph-trend': '그래프 증감형',
+  'pie': 'Pie / Table',
+  'flowchart': '순서도',
+  'photo': '사진',
+};
+const ALL_TYPES = Object.keys(TYPE_LABELS);
+const MAX_Q = 10;
+
+let state = {
+  selectedType: 'all',
+  mode: 'typing',
+  session: [],
+  currentIdx: 0,
+  answered: false,
+  sessionResults: [],
+  wrongPool: [],
+  fromWrongPool: false,
+};
+
+function loadStorage() {
+  try {
+    state.wrongPool = JSON.parse(localStorage.getItem('diQuiz_wrongPool') || '[]');
+    updateWrongPoolUI();
+  } catch(e) { state.wrongPool = []; }
+}
+
+function saveStorage() {
+  localStorage.setItem('diQuiz_wrongPool', JSON.stringify(state.wrongPool));
+  updateWrongPoolUI();
+}
+
+function loadStats() {
+  try {
+    return JSON.parse(localStorage.getItem('diQuiz_stats') || '{}');
+  } catch(e) { return {}; }
+}
+
+function saveStats(stats) {
+  localStorage.setItem('diQuiz_stats', JSON.stringify(stats));
+}
+
+function updateWrongPoolUI() {
+  const n = state.wrongPool.length;
+  document.getElementById('wrong-pool-count').innerHTML = `<i class="ti ti-alert-triangle"></i> ${n}개`;
+  document.getElementById('btn-wrong-pool').disabled = n === 0;
+}
+
+// Type chip selection (mutually exclusive with "all")
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    state.selectedType = chip.dataset.type;
+  });
+});
+
+function selectMode(el) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.mode = el.dataset.mode;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildSession(pool) {
+  return shuffle(pool).slice(0, MAX_Q);
+}
+
+function startQuiz() {
+  state.fromWrongPool = false;
+  let pool = state.selectedType === 'all'
+    ? QUESTIONS
+    : QUESTIONS.filter(q => q.type === state.selectedType);
+  if (pool.length === 0) { alert('선택한 유형에 문제가 없습니다.'); return; }
+  state.session = buildSession(pool);
+  state.currentIdx = 0;
+  state.sessionResults = [];
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function startWrongPool() {
+  if (state.wrongPool.length === 0) return;
+  state.fromWrongPool = true;
+  // Re-hydrate wrongPool items as question objects
+  const pool = state.wrongPool.map(id => QUESTIONS[id]).filter(Boolean);
+  if (pool.length === 0) { state.wrongPool = []; saveStorage(); return; }
+  state.session = buildSession(pool);
+  state.currentIdx = 0;
+  state.sessionResults = [];
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.session[state.currentIdx];
+  const total = state.session.length;
+  const idx = state.currentIdx;
+
+  document.getElementById('q-counter').textContent = `문제 ${idx + 1} / ${total}`;
+  document.getElementById('q-type-badge').textContent = q.typeLabel;
+  document.getElementById('progress-bar').style.width = `${(idx / total) * 100}%`;
+  document.getElementById('q-feedback').className = 'feedback';
+  document.getElementById('q-feedback').textContent = '';
+  document.getElementById('btn-next').style.display = 'none';
+  state.answered = false;
+
+  // Build template HTML
+  const blank = q.blanks[0];
+  const parts = q.template.split('___');
+  let html = '';
+  parts.forEach((part, i) => {
+    html += part;
+    if (i < parts.length - 1) {
+      if (state.mode === 'typing') {
+        html += `<input class="blank-input" id="blank-0" type="text" autocomplete="off" spellcheck="false" placeholder="입력...">`;
+      } else {
+        html += `<span id="blank-0" class="blank-input" style="min-width:120px;display:inline-block"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>`;
+      }
+    }
+  });
+  document.getElementById('q-template').innerHTML = html;
+
+  // Mode-specific setup
+  if (state.mode === 'typing') {
+    document.getElementById('typing-area').style.display = '';
+    document.getElementById('mc-area').style.display = 'none';
+    const input = document.getElementById('blank-0');
+    input.focus();
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') submitTyping(); });
+  } else {
+    document.getElementById('typing-area').style.display = 'none';
+    document.getElementById('mc-area').style.display = '';
+    renderMCOptions(q);
+  }
+}
+
+function renderMCOptions(q) {
+  const blank = q.blanks[0];
+  const answers = blank.answer.split('/');
+  const choices = shuffle([blank.answer, ...blank.distractors]).slice(0, 4);
+  // Ensure answer is in choices
+  if (!choices.some(c => answers.includes(c))) {
+    choices[Math.floor(Math.random() * choices.length)] = blank.answer;
+  }
+
+  const grid = document.getElementById('mc-options');
+  grid.innerHTML = '';
+  choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = choice;
+    btn.onclick = () => selectMC(btn, choice, blank.answer);
+    grid.appendChild(btn);
+  });
+}
+
+function selectMC(btn, chosen, answer) {
+  if (state.answered) return;
+  state.answered = true;
+  const answers = answer.split('/');
+  const isCorrect = answers.some(a => a.toLowerCase().trim() === chosen.toLowerCase().trim());
+
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.disabled = true;
+    const bAnswers = answer.split('/');
+    if (bAnswers.some(a => a.toLowerCase().trim() === b.textContent.toLowerCase().trim())) {
+      b.classList.add('correct');
+    }
+  });
+  if (!isCorrect) btn.classList.add('wrong');
+
+  // Fill blank display
+  const blankEl = document.getElementById('blank-0');
+  blankEl.textContent = chosen;
+  blankEl.className = 'blank-input ' + (isCorrect ? 'correct' : 'wrong');
+
+  showFeedback(isCorrect, answer);
+  recordResult(isCorrect);
+  document.getElementById('btn-next').style.display = '';
+}
+
+function submitTyping() {
+  if (state.answered) return;
+  const input = document.getElementById('blank-0');
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) return;
+  state.answered = true;
+
+  const q = state.session[state.currentIdx];
+  const blank = q.blanks[0];
+  const answers = blank.answer.split('/');
+  const isCorrect = answers.some(a => a.toLowerCase().trim() === val.toLowerCase().trim());
+
+  input.disabled = true;
+  input.className = 'blank-input ' + (isCorrect ? 'correct' : 'wrong');
+
+  showFeedback(isCorrect, blank.answer);
+  recordResult(isCorrect);
+  document.getElementById('btn-submit-typing').style.display = 'none';
+  document.getElementById('btn-next').style.display = '';
+}
+
+function showFeedback(isCorrect, answer) {
+  const fb = document.getElementById('q-feedback');
+  if (isCorrect) {
+    fb.className = 'feedback correct';
+    fb.innerHTML = `<i class="ti ti-check"></i> 정답입니다!`;
+  } else {
+    fb.className = 'feedback wrong';
+    fb.innerHTML = `<i class="ti ti-x"></i> 오답. 정답: <strong>${answer}</strong>`;
+  }
+}
+
+function recordResult(isCorrect) {
+  const q = state.session[state.currentIdx];
+  state.sessionResults.push({ type: q.type, typeLabel: q.typeLabel, correct: isCorrect, qIndex: QUESTIONS.indexOf(q) });
+
+  // Wrong pool management
+  const qIdx = QUESTIONS.indexOf(q);
+  if (!isCorrect) {
+    if (qIdx >= 0 && !state.wrongPool.includes(qIdx)) {
+      state.wrongPool.push(qIdx);
+    }
+  } else {
+    state.wrongPool = state.wrongPool.filter(i => i !== qIdx);
+  }
+  saveStorage();
+
+  // Cumulative stats
+  const stats = loadStats();
+  if (!stats[q.type]) stats[q.type] = { correct: 0, total: 0 };
+  stats[q.type].total++;
+  if (isCorrect) stats[q.type].correct++;
+  saveStats(stats);
+}
+
+function nextQuestion() {
+  state.currentIdx++;
+  if (state.currentIdx >= state.session.length) {
+    showResult();
+    return;
+  }
+  document.getElementById('btn-submit-typing').style.display = '';
+  renderQuestion();
+}
+
+function showResult() {
+  showScreen('result');
+  const total = state.sessionResults.length;
+  const correct = state.sessionResults.filter(r => r.correct).length;
+  const pct = total ? Math.round((correct / total) * 100) : 0;
+
+  document.getElementById('r-score').textContent = `${correct}/${total}`;
+  document.getElementById('r-pct').textContent = `정답률 ${pct}%`;
+
+  // Type breakdown
+  const byType = {};
+  state.sessionResults.forEach(r => {
+    if (!byType[r.type]) byType[r.type] = { label: r.typeLabel, correct: 0, total: 0 };
+    byType[r.type].total++;
+    if (r.correct) byType[r.type].correct++;
+  });
+  const container = document.getElementById('r-type-stats');
+  container.innerHTML = '';
+  Object.values(byType).forEach(t => {
+    const p = t.total ? Math.round((t.correct / t.total) * 100) : 0;
+    container.innerHTML += renderStatRow(t.label, t.correct, t.total, p);
+  });
+}
+
+function renderStatRow(label, correct, total, pct) {
+  return `
+    <div class="stat-row">
+      <span class="stat-label">${label}</span>
+      <div class="stat-bar-wrap"><div class="stat-bar" style="width:${pct}%"></div></div>
+      <span class="stat-pct">${correct}/${total}</span>
+    </div>`;
+}
+
+function showStats() {
+  showScreen('stats');
+  const stats = loadStats();
+  let totalC = 0, totalT = 0;
+  ALL_TYPES.forEach(t => {
+    if (stats[t]) { totalC += stats[t].correct; totalT += stats[t].total; }
+  });
+  const totalPct = totalT ? Math.round((totalC / totalT) * 100) : 0;
+
+  document.getElementById('s-total').innerHTML = `
+    <div class="stat-row">
+      <span class="stat-label">전체</span>
+      <div class="stat-bar-wrap"><div class="stat-bar" style="width:${totalPct}%"></div></div>
+      <span class="stat-pct">${totalC}/${totalT}</span>
+    </div>`;
+
+  const container = document.getElementById('s-type-stats');
+  container.innerHTML = '';
+  ALL_TYPES.forEach(t => {
+    const d = stats[t] || { correct: 0, total: 0 };
+    const p = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+    container.innerHTML += renderStatRow(TYPE_LABELS[t], d.correct, d.total, p);
+  });
+}
+
+function resetStats() {
+  if (!confirm('누적 통계를 초기화하시겠습니까?')) return;
+  localStorage.removeItem('diQuiz_stats');
+  showStats();
+}
+
+function goHome() {
+  showScreen('home');
+  updateWrongPoolUI();
+}
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+}
+
+// Init
+loadStorage();
+</script>
+</body>
+</html>
