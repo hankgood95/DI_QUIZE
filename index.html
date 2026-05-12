@@ -21,6 +21,7 @@
   --wrong-border: #feb2b2;
   --radius: 10px;
   --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --study-var: #BA7517;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -38,6 +39,7 @@
     --wrong-bg: #2d1515;
     --wrong-border: #c53030;
     --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    --study-var: #f0a040;
   }
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -189,6 +191,76 @@ h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; }
   #template-text { font-size: 0.88rem; }
   .btn { padding: 9px 16px; }
 }
+
+/* ─── STUDY SCREEN ──────────────────────────────────────── */
+.study-tabs {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.study-tab {
+  flex: 1;
+  padding: 9px 6px;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+.study-tab:last-child { border-right: none; }
+.study-tab.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+.study-text { font-size: 0.95rem; line-height: 2.0; letter-spacing: 0.01em; }
+.study-phrase { color: var(--accent); font-weight: 700; }
+.study-variable { color: var(--study-var); font-style: italic; }
+
+.study-legend {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Flashcard */
+.fc-card {
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-bottom: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.fc-card:active { opacity: 0.9; }
+.fc-face {
+  padding: 28px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.fc-front {
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.fc-back { display: none; }
+.fc-card.flipped .fc-front { display: none; }
+.fc-card.flipped .fc-back { display: block; animation: fc-in 0.2s ease; }
+@keyframes fc-in { from { opacity: 0; } to { opacity: 1; } }
+.fc-label { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+.fc-hint { font-size: 0.78rem; color: var(--text-muted); }
+.fc-nav { display: flex; justify-content: space-between; align-items: center; }
+.fc-counter { font-size: 0.82rem; color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -229,6 +301,7 @@ h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; }
 
   <div class="btn-row">
     <button class="btn btn-primary" onclick="startQuiz()">퀴즈 시작</button>
+    <button class="btn btn-secondary" onclick="showStudy()">공부하기</button>
     <button class="btn btn-secondary" onclick="showStats()">통계 보기</button>
     <button class="btn btn-secondary" onclick="showWrongNote()">오답노트</button>
   </div>
@@ -259,6 +332,34 @@ h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; }
     <div id="stats-content"></div>
     <div style="margin-top:16px;">
       <button class="btn btn-secondary btn-sm" onclick="if(confirm('통계를 초기화할까요?')){resetStats();showStats();}">통계 초기화</button>
+    </div>
+  </div>
+</div>
+
+<!-- STUDY SCREEN -->
+<div id="screen-study" class="screen">
+  <div style="padding-top: 20px;">
+    <button class="back-btn" onclick="goHome()">← 홈으로</button>
+    <h2>공부하기</h2>
+
+    <div class="study-tabs">
+      <button class="study-tab active" data-tab="full" onclick="switchStudyTab('full')">전체 보기</button>
+      <button class="study-tab" data-tab="color" onclick="switchStudyTab('color')">색상 구분</button>
+      <button class="study-tab" data-tab="flashcard" onclick="switchStudyTab('flashcard')">플래시카드</button>
+    </div>
+
+    <div class="tag-group" id="study-type-group">
+      <span class="tag active" data-val="graph-compare" onclick="switchStudyType('graph-compare')">그래프 비교형</span>
+      <span class="tag" data-val="graph-trend" onclick="switchStudyType('graph-trend')">그래프 증감형</span>
+      <span class="tag" data-val="pie" onclick="switchStudyType('pie')">Pie / Table</span>
+      <span class="tag" data-val="flowchart" onclick="switchStudyType('flowchart')">순서도</span>
+      <span class="tag" data-val="photo" onclick="switchStudyType('photo')">사진</span>
+    </div>
+
+    <div id="study-content" style="margin-top: 8px;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary btn-sm" onclick="startQuizFromStudy()">이 유형 퀴즈 풀기</button>
     </div>
   </div>
 </div>
@@ -863,6 +964,203 @@ function practiceWrong(templateKey) {
 
 function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── STUDY ───────────────────────────────────────────────────────────────────
+
+const studyState = {
+  templateKey: 'graph-compare',
+  tab: 'full',
+  cardIndex: 0,
+};
+
+function showStudy() {
+  studyState.tab = 'full';
+  studyState.cardIndex = 0;
+  document.querySelectorAll('.study-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === 'full');
+  });
+  showScreen('study');
+  renderStudyContent();
+}
+
+function switchStudyTab(tab) {
+  studyState.tab = tab;
+  studyState.cardIndex = 0;
+  document.querySelectorAll('.study-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  renderStudyContent();
+}
+
+function switchStudyType(key) {
+  studyState.templateKey = key;
+  studyState.cardIndex = 0;
+  document.querySelectorAll('#study-type-group .tag').forEach(t => {
+    t.classList.toggle('active', t.dataset.val === key);
+  });
+  renderStudyContent();
+}
+
+function startQuizFromStudy() {
+  state.templateKey = studyState.templateKey;
+  document.querySelectorAll('#type-group .tag').forEach(t => {
+    t.classList.toggle('active', t.dataset.val === studyState.templateKey);
+  });
+  startQuiz();
+}
+
+function isVarToken(v) {
+  return /^\(.*\)$/.test(v);
+}
+
+function renderTokensInto(container, tokens, colored) {
+  tokens.forEach(tok => {
+    if (tok.t === 'fixed') {
+      const parts = tok.v.split('\n');
+      parts.forEach((part, pi) => {
+        if (pi > 0) container.appendChild(document.createElement('br'));
+        if (!part) return;
+        const lbl = SECTION_LABELS.find(l => part.startsWith(l));
+        if (lbl) {
+          const b = document.createElement('b');
+          b.textContent = lbl;
+          container.appendChild(b);
+          const rest = part.slice(lbl.length);
+          if (rest) container.appendChild(document.createTextNode(rest));
+        } else {
+          container.appendChild(document.createTextNode(part));
+        }
+      });
+    } else {
+      if (colored) {
+        const span = document.createElement('span');
+        span.className = isVarToken(tok.v) ? 'study-variable' : 'study-phrase';
+        span.textContent = tok.v;
+        container.appendChild(span);
+      } else {
+        container.appendChild(document.createTextNode(tok.v));
+      }
+    }
+  });
+}
+
+function groupTokensBySection(tokens) {
+  const LABELS = ['Intro:', 'Body 1:', 'Body 2:', 'Body 3:', 'Conclusion:'];
+  const sections = [];
+  let curLabel = null;
+  let curToks = [];
+
+  function flush() {
+    if (curLabel) sections.push({ label: curLabel, tokens: curToks.slice() });
+  }
+
+  tokens.forEach(tok => {
+    if (tok.t !== 'fixed') {
+      if (curLabel !== null) curToks.push(tok);
+      return;
+    }
+    let found = false;
+    for (const lbl of LABELS) {
+      const pos = tok.v.indexOf(lbl);
+      if (pos < 0) continue;
+      const before = tok.v.slice(0, pos).replace(/\n/g, '');
+      if (before) curToks.push({ t: 'fixed', v: before });
+      flush();
+      curLabel = lbl;
+      curToks = [];
+      const after = tok.v.slice(pos + lbl.length);
+      if (after) curToks.push({ t: 'fixed', v: after });
+      found = true;
+      break;
+    }
+    if (!found && curLabel !== null) curToks.push(tok);
+  });
+
+  flush();
+  return sections;
+}
+
+function renderStudyContent() {
+  const container = document.getElementById('study-content');
+  container.innerHTML = '';
+  const tokens = TEMPLATES[studyState.templateKey].tokens;
+
+  if (studyState.tab === 'full') {
+    const card = document.createElement('div');
+    card.className = 'card study-text';
+    renderTokensInto(card, tokens, false);
+    container.appendChild(card);
+
+  } else if (studyState.tab === 'color') {
+    const card = document.createElement('div');
+    card.className = 'card study-text';
+    renderTokensInto(card, tokens, true);
+    container.appendChild(card);
+
+    const legend = document.createElement('div');
+    legend.className = 'study-legend';
+    legend.innerHTML =
+      '<span><span style="color:var(--accent);font-weight:700;">■</span> 고정 문구 (외울 것)</span>' +
+      '<span><span style="color:var(--study-var);font-style:italic;">■</span> 변수 자리</span>' +
+      '<span>■ 연결어</span>';
+    container.appendChild(legend);
+
+  } else {
+    const sections = groupTokensBySection(tokens);
+    renderFlashcard(container, sections);
+  }
+}
+
+function renderFlashcard(container, sections) {
+  const total = sections.length;
+  const idx = studyState.cardIndex;
+  const sec = sections[idx];
+
+  const card = document.createElement('div');
+  card.className = 'fc-card';
+  card.onclick = () => card.classList.toggle('flipped');
+
+  const front = document.createElement('div');
+  front.className = 'fc-face fc-front';
+  front.innerHTML =
+    `<div class="fc-label">${sec.label.replace(':', '')}</div>` +
+    `<div class="fc-hint">탭해서 내용 확인</div>`;
+  card.appendChild(front);
+
+  const back = document.createElement('div');
+  back.className = 'fc-face fc-back study-text';
+  const lblEl = document.createElement('b');
+  lblEl.textContent = sec.label + ' ';
+  back.appendChild(lblEl);
+  renderTokensInto(back, sec.tokens, true);
+  card.appendChild(back);
+
+  container.appendChild(card);
+
+  const nav = document.createElement('div');
+  nav.className = 'fc-nav';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'btn btn-secondary btn-sm';
+  prevBtn.textContent = '← 이전';
+  prevBtn.disabled = idx === 0;
+  prevBtn.onclick = (e) => { e.stopPropagation(); studyState.cardIndex--; renderStudyContent(); };
+
+  const counter = document.createElement('span');
+  counter.className = 'fc-counter';
+  counter.textContent = `${idx + 1} / ${total}`;
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'btn btn-secondary btn-sm';
+  nextBtn.textContent = '다음 →';
+  nextBtn.disabled = idx === total - 1;
+  nextBtn.onclick = (e) => { e.stopPropagation(); studyState.cardIndex++; renderStudyContent(); };
+
+  nav.appendChild(prevBtn);
+  nav.appendChild(counter);
+  nav.appendChild(nextBtn);
+  container.appendChild(nav);
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
