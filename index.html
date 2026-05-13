@@ -261,6 +261,25 @@ h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; }
 .fc-hint { font-size: 0.78rem; color: var(--text-muted); }
 .fc-nav { display: flex; justify-content: space-between; align-items: center; }
 .fc-counter { font-size: 0.82rem; color: var(--text-muted); }
+
+/* ─── TIPS ──────────────────────────────────────────────── */
+.top-bar { display: flex; align-items: center; gap: 12px; padding: 20px 0 12px; }
+.top-bar h2 { margin-bottom: 0; }
+.tips-section { margin-top: 24px; }
+.tips-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.tips-header h3 { font-size: 15px; font-weight: 700; }
+.tip-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px; cursor: pointer; transition: border-color .15s; }
+.tip-card:hover { border-color: var(--accent); }
+.tip-card .tip-emoji { font-size: 24px; }
+.tip-card .tip-title { font-size: 14px; font-weight: 700; margin: 8px 0 4px; }
+.tip-card .tip-body { font-size: 13px; color: var(--text-muted); line-height: 1.6; white-space: pre-line; }
+.tip-action { display: flex; justify-content: center; margin-top: 10px; }
+.all-tips-grid { display: flex; flex-direction: column; gap: 12px; }
+.tip-card-full { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.tip-card-full .tip-head { display: flex; align-items: center; gap: 10px; }
+.tip-card-full .tip-head .tip-emoji { font-size: 22px; }
+.tip-card-full .tip-head .tip-title { font-size: 14px; font-weight: 700; }
+.tip-card-full .tip-body { font-size: 13px; color: var(--text-muted); line-height: 1.65; margin-top: 8px; padding-left: 32px; white-space: pre-line; }
 </style>
 </head>
 <body>
@@ -361,6 +380,19 @@ h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; }
     <div class="btn-row">
       <button class="btn btn-primary btn-sm" onclick="startQuizFromStudy()">이 유형 퀴즈 풀기</button>
     </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:20px 0 0;">
+    <div class="tips-section">
+      <div class="tips-header">
+        <h3>💡 꿀팁</h3>
+        <button class="btn btn-secondary" style="font-size:12px;padding:6px 12px"
+          onclick="renderAllTips(); showScreen('screen-tips')">전체보기</button>
+      </div>
+      <div class="tip-card" id="random-tip-card" onclick="nextRandomTip()"></div>
+      <div class="tip-action">
+        <button class="btn btn-secondary mt-8" onclick="nextRandomTip()">🎲 다른 꿀팁 보기</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -370,6 +402,17 @@ h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; }
     <button class="back-btn" onclick="goHome()">← 홈으로</button>
     <h2>오답노트</h2>
     <div id="wrong-content"></div>
+  </div>
+</div>
+
+<!-- TIPS SCREEN -->
+<div id="screen-tips" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="showScreen('screen-study')">←</button>
+    <h2>꿀팁 전체보기</h2>
+  </div>
+  <div style="padding:0 0 16px">
+    <div class="all-tips-grid" id="all-tips-content"></div>
   </div>
 </div>
 
@@ -628,6 +671,36 @@ const TEMPLATES = {
 }
 
 }; // end TEMPLATES
+
+// ─── TIPS DATA ───────────────────────────────────────────────────────────────
+
+const TIPS = [
+  {
+    emoji: '🎯',
+    title: '오디오 재생 전 — 뼈대(Frame) 잡기',
+    body: '오디오 시작 전 10초 준비 시간 동안 아래 틀을 종이에 미리 적어두세요.\n\nT  : 주제\nS1 : 화자 1 발언\nS2 : 화자 2 발언\nS3 : 화자 3 발언\nCL : 결론 및 합의 사항'
+  },
+  {
+    emoji: '⚡',
+    title: '오디오 초반 — 주제(Topic) 즉시 기록',
+    body: '오디오 시작 직후 나오는 토론 주제를 가장 먼저 적으세요.\n서론 "The discussion was about (주제)" 완성의 핵심입니다.'
+  },
+  {
+    emoji: '👥',
+    title: '오디오 진행 중 — 화자 구분 & 핵심 파악',
+    body: '반드시 S1 / S2 / S3 로 구분해서 기록하세요. 섞으면 답변 구성 시 혼란이 생깁니다.\n화자 태도도 짧게 메모하세요:\n동의 → agree  /  반대 → disag  /  걱정 → worry  /  낙관 → opti'
+  },
+  {
+    emoji: '✂️',
+    title: '시간 단축 — 약어 & 기호 활용',
+    body: '단어를 다 적을 시간이 없으니 줄여서 쓰세요.\n\n자음 중심 축약:\nstudy → std  /  lecture → lectr  /  different → dffrnt  /  important → imp\n\n기호 활용:\n→ 결과  |  ★ 중요 포인트  |  B! 반대(But)  |  2 = to  |  4 = for  |  X = not'
+  },
+  {
+    emoji: '📝',
+    title: '오디오 후반 — 결론(CL) 정리',
+    body: '마지막 부분에서 합의 사항 또는 다음 행동(Next Action)을 반드시 적으세요.\n"누가 무엇을 하기로 했다"는 구체적 결론이 중요합니다.\n\n키워드가 너무 적으면? 키워드 사이에 쉬운 주어 + 동사를 넣어 완전한 문장으로 만드세요. PTE는 완전한 문장을 채점 기준으로 삼습니다.'
+  }
+];
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 
@@ -982,6 +1055,8 @@ function showStudy() {
   });
   showScreen('study');
   renderStudyContent();
+  tipIndex = Math.floor(Math.random() * TIPS.length);
+  renderRandomTip();
 }
 
 function switchStudyTab(tab) {
@@ -1161,6 +1236,34 @@ function renderFlashcard(container, sections) {
   nav.appendChild(counter);
   nav.appendChild(nextBtn);
   container.appendChild(nav);
+}
+
+// ─── TIPS ────────────────────────────────────────────────────────────────────
+
+let tipIndex = 0;
+
+function renderRandomTip() {
+  const t = TIPS[tipIndex % TIPS.length];
+  const el = document.getElementById('random-tip-card');
+  el.innerHTML = '<div class="tip-emoji">' + t.emoji + '</div>'
+               + '<div class="tip-title">' + t.title + '</div>'
+               + '<div class="tip-body">' + t.body + '</div>';
+}
+
+function nextRandomTip() {
+  tipIndex++;
+  renderRandomTip();
+}
+
+function renderAllTips() {
+  const el = document.getElementById('all-tips-content');
+  el.innerHTML = TIPS.map(t =>
+    '<div class="tip-card-full">'
+    + '<div class="tip-head"><span class="tip-emoji">' + t.emoji + '</span>'
+    + '<span class="tip-title">' + t.title + '</span></div>'
+    + '<div class="tip-body">' + t.body + '</div>'
+    + '</div>'
+  ).join('');
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
